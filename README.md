@@ -1,2 +1,4 @@
-nba_stats
-=========
+NBA Statistics Scraper and Analyzer
+===================================
+
+More info soon!
