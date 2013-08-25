@@ -16,6 +16,7 @@ for line in f.readlines():
 	data = s.text
 	soup = BeautifulSoup(data)
 	# print soup.contents[0].contents[3]['x']
+	shots = []
 	for shot in soup.contents[0].contents[1:]:
 
 		x = shot['x']
@@ -29,8 +30,7 @@ for line in f.readlines():
 		p = shot['p']
 		d = shot['d']
 
-		col.insert({"gameId":line.strip(),
-			"x": x,
+		shots.append({"x": x,
 			"sid": sid,
 			"pid": pid,
 			"qtr": qtr,
@@ -40,4 +40,5 @@ for line in f.readlines():
 			"made": made,
 			"p": p,
 			"d": d})
+	col.insert({"gameID":line.strip(), "shots":shots})
 f.close()

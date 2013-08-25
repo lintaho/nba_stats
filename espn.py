@@ -3,6 +3,7 @@ import requests
 import re
 import json
 from pymongo import MongoClient
+import time
 
 # MongoDB setup
 connection = MongoClient('localhost', 27017)
@@ -13,17 +14,35 @@ col = db['2013_box_scores']
 
 f = open('gameIds.txt', 'r+')
 for line in f.readlines():
-	print line.strip()
+	# print line.strip()
 	r = requests.get("http://scores.espn.go.com/nba/boxscore?gameId=" + line.strip())
 	data = r.text
 	soup = BeautifulSoup(data)
 
-	players = soup.findAll('tr', {'class': re.compile(r".*\bplayer\b.*")})
+	# players = soup.findAll('tr', {'class': re.compile(r".*\bplayer\b.*")})
 
+	# print soup.findAll('div', 'mod-content')[1]
+
+	# break
+
+	tim = None
+	loc = None
 	for p in soup.findAll('div', {'class': 'game-time-location'})[0]:
-		print p.text
-
-	break
+		if tim == None:
+			tim = p.text
+			# y = p.text.split(',')
+			# z = y[0][:-3] + y[1] + y[2]
+			# tim = time.strptime(z, "%I:%M %p %B %d %Y")
+		else:
+			loc = p.text.split(', ')
+			# print loc
+			stadium = loc[0]
+			city = loc[1]
+			# print stadium
+			# print city
+	# print tim
+# 
+	# print time.strptime(tim[1], " %B %d")
 
 	trs = soup.findAll('tr')
 	# print soup.findAll('tr', 'team-color-strip')[0].th.text
@@ -60,10 +79,9 @@ for line in f.readlines():
 	for team in [t1players,t2players]:
 		stats = []
 		for player in team:
-			name = player[1].text
-			# print player[2].text
+			name, position = player[1].text.split(', ')
 			if "DNP" in player[2].text:
-				stats.append({"name":name, "played": player[2].text, "min":'0', "fgm-a":'0-0', "3pm-a": '0-0', "oreb":'0', "dreb":'0', "reb":'0',
+				stats.append({"name":name, "position":position, "played": player[2].text, "min":'0', "fgm-a":'0-0', "3pm-a": '0-0', "oreb":'0', "dreb":'0', "reb":'0',
 				"ast":'0', "stl":'0',"blk":'0',"to":'0',"pf":'0',"pm":'0',"pts":'0'})
 				continue
 			minutes = player[2].text
@@ -79,7 +97,7 @@ for line in f.readlines():
 			pf = player[12].text
 			pm = player[13].text
 			pts = player[14].text
-			stats.append({"name":name, "played":"P", "min":minutes, "fgm-a":fgma, "3pm-a": tpma, "oreb":oreb, "dreb":dreb, "reb":reb,
+			stats.append({"name":name, "position":position, "played":"P", "min":minutes, "fgm-a":fgma, "3pm-a": tpma, "oreb":oreb, "dreb":dreb, "reb":reb,
 				"ast":ast, "stl":stl,"blk":blk,"to":to,"pf":pf,"pm":pm,"pts":pts})
 			if t1stats == []:
 				t1stats = stats
@@ -98,7 +116,7 @@ for line in f.readlines():
 	
 	# s = open('stats.txt', 'w')
 	# with s as outfile:
-	col.insert({"gameId": line.strip(), "team1": {"name":team1,
+	col.insert({"gameId": line.strip(), "time":tim, "stadium":stadium,"city":city, "team1": {"name":team1,
 	    "tfgm-a": team1tots[1], "t3pm-a":team1tots[2], "toreb":team1tots[3], 
 		"tdreb":team1tots[4], "treb":team1tots[5], "tast": team1tots[6], "tstl": team1tots[7], "tblk":team1tots[8],
 		"tto":team1tots[9], "tpf":team1tots[10], "tpts":team1tots[12], "players":t1stats},
