@@ -12,6 +12,7 @@ col = db['2013_shot_chart']
 f = open('gameIds.txt', 'r+')
 
 for line in f.readlines():
+	print line.strip()
 	s = requests.get("http://sports.espn.go.com/nba/gamepackage/data/shot?gameId=" + line.strip())
 	data = s.text
 	soup = BeautifulSoup(data)
@@ -27,10 +28,12 @@ for line in f.readlines():
 		y =  shot['y']
 		t = shot['t']
 		made = shot['made']
-		p = shot['p']
+		p = " ".join(shot['p'].split("  "))
 		d = shot['d']
 
-		shots.append({"x": x,
+		# shots.append(
+		col.insert({"gameId":line.strip(),
+			"x": x,
 			"sid": sid,
 			"pid": pid,
 			"qtr": qtr,
@@ -40,5 +43,5 @@ for line in f.readlines():
 			"made": made,
 			"p": p,
 			"d": d})
-	col.insert({"gameID":line.strip(), "shots":shots})
+	# col.insert({"gameID":line.strip(), "shots":shots})
 f.close()
