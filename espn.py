@@ -10,7 +10,8 @@ connection = MongoClient('localhost', 27017)
 db = connection.local
 col = db['2013_box_scores']
 
-# TODO add time/location as well as shot types(fast break, etc.) add gameId
+# TODO add shot types(fast break, etc.), add playoff round #
+
 
 f = open('gameIds.txt', 'r+')
 for line in f.readlines():
@@ -41,7 +42,13 @@ for line in f.readlines():
 			# print stadium
 			# print city
 	# print tim
-# 
+
+	if soup.findAll('div', {'class': 'series-status'})[0].strong == None:
+		playoffs = 'false'
+	else:
+		playoffs = 'true'
+# tsStats/n
+	# break
 	# print time.strptime(tim[1], " %B %d")
 
 	trs = soup.findAll('tr')
@@ -116,14 +123,23 @@ for line in f.readlines():
 	
 	# s = open('stats.txt', 'w')
 	# with s as outfile:
-	col.insert({"gameId": line.strip(), "time":tim, "stadium":stadium,"city":city, "team1": {"name":team1,
-	    "tfgm-a": team1tots[1], "t3pm-a":team1tots[2], "toreb":team1tots[3], 
-		"tdreb":team1tots[4], "treb":team1tots[5], "tast": team1tots[6], "tstl": team1tots[7], "tblk":team1tots[8],
-		"tto":team1tots[9], "tpf":team1tots[10], "tpts":team1tots[12], "players":t1stats},
+	# print team1tots[9], team1tots
+	# break
+	if team1tots[13] > team2tots[13]:
+		winner = team1
+	elif team2tots[13] > team1tots[13]:
+		winner = team2
+	else:
+		winner = "None"
+
+	col.insert({"gameId": line.strip(), "playoff": playoffs, "winner":winner, "time":tim, "stadium":stadium,"city":city, "team1": {"name":team1,
+	    "tfgm-a": team1tots[1], "t3pm-a":team1tots[2], "tftm-a":team1tots[3], "toreb":team1tots[4], 
+		"tdreb":team1tots[5], "treb":team1tots[6], "tast": team1tots[7], "tstl": team1tots[8], "tblk":team1tots[9],
+		"tto":team1tots[10], "tpf":team1tots[11], "tpts":team1tots[13], "players":t1stats},
 		"team2":{"name":team2,     
-		"tfgm-a": team2tots[1], "t3pm-a":team2tots[2], "toreb":team2tots[3], 
-		"tdreb":team2tots[4], "treb":team2tots[5], "tast": team2tots[6], "tstl": team2tots[7], "tblk":team2tots[8],
-		"tto":team2tots[9], "tpf":team2tots[10], "tpts":team2tots[12],"players":t2stats}})
+		"tfgm-a": team2tots[1], "t3pm-a":team2tots[2], "tftm-a":team1tots[3], "toreb":team2tots[4], 
+		"tdreb":team2tots[5], "treb":team2tots[6], "tast": team2tots[7], "tstl": team2tots[8], "tblk":team2tots[9],
+		"tto":team2tots[10], "tpf":team2tots[11], "tpts":team2tots[13],"players":t2stats}})
 	# s.close()
 	# print box_data_json
 	# col.insert(box_data_json)

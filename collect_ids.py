@@ -5,7 +5,7 @@ import json
 
 # url = raw_input('')
 year = 2012
-f = open('gameIds.txt', 'w')
+f = open('gameIds' + str(year) + '.txt', 'w')
 for i in range(270):
 	string = "http://scores.espn.go.com/nba/scoreboard?date=" + str(year) + "10" + str("{0:0=2d}".format(i))
 	s = requests.get(string)
