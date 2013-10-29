@@ -39,9 +39,9 @@ heatmap, xedges, yedges = np.histogram2d(x, y, bins=100)
 extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
 
 plt.clf()
-plt.imshow(heatmap, extent=extent)
+plt.imshow(d, extent=extent)
 plt.colorbar()
-# plt.show()
+plt.show()
 
 # 	gamedata = box.find_one({"gameId":shot['gameId']})
 # 	print gamedata['team1']['name'] + " vs. " + gamedata['team2']['name']
